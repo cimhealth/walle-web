@@ -60,7 +60,6 @@ class ConfController extends Controller
     public function actionPreview($projectId) {
         $this->layout = 'modal';
         $project = $this->findModel($projectId);
-
         return $this->render('preview', [
             'conf' => $project,
         ]);
@@ -232,15 +231,14 @@ class ConfController extends Controller
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id) {
-        if (($model = Project::getConf($id)) !== null) {
-            //判断是否为管理员
-            if(!Group::isAuditAdmin($this->uid, $model->id)){
-                throw new \Exception(yii::t('w', 'you are not admin of project'));
+        if($id !== null){
+            if(Group::isAuditAdmin($this->uid, $id)){
+                return Project::getConf($id);
+            }else{
+                throw new \Exception(yii::t('w', 'you are net admin of project'));
             }
-            return $model;
-        } else {
-            throw new NotFoundHttpException(yii::t('conf', 'project not exists'));
         }
+        throw new NotFoundHttpException(yii::t('conf','project not exists'));
     }
 
     /**
